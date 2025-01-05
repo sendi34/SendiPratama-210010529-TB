@@ -18,12 +18,12 @@ import javax.swing.Timer;
  *
  * @author sendi
  */
-public class PegawaiFrame extends javax.swing.JFrame {
+public class KaryawanFrame extends javax.swing.JFrame {
 
     /**
      * Creates new form PegawaiFrame
      */
-    public PegawaiFrame() {
+    public KaryawanFrame() {
         setUndecorated(true); // Menghilangkan border dan title bar  
         initComponents();
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Maksimalkan ke layar penuh  
@@ -408,7 +408,7 @@ public class PegawaiFrame extends javax.swing.JFrame {
         FlatMacLightLaf.setup();
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new PegawaiFrame().setVisible(true);
+                new KaryawanFrame().setVisible(true);
             }
         });
     }
