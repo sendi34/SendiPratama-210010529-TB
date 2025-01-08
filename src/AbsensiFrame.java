@@ -1,13 +1,25 @@
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Font;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -26,6 +38,10 @@ public class AbsensiFrame extends javax.swing.JFrame {
     public AbsensiFrame() {
         setUndecorated(true); // Menghilangkan border dan title bar  
         initComponents();
+         TampilData();
+        loadPegawaiToComboBox();
+       
+        bersih();
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Maksimalkan ke layar penuh  
         setFont();
         tampilkanTanggal();
@@ -34,6 +50,9 @@ public class AbsensiFrame extends javax.swing.JFrame {
         jamKeluar();
     }
     
+    String id;
+    Connection conn = Koneksi.getKoneksi();
+    PreparedStatement pst;
     private void setFont(){
         try {
             Font fontJudul = Font.createFont(Font.TRUETYPE_FONT,new File("src/Font/Montserrat-Black.ttf")).deriveFont(17f);
@@ -169,21 +188,41 @@ public class AbsensiFrame extends javax.swing.JFrame {
         top.add(gaji, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 460, -1, -1));
 
         jButton1.setText("Gaji");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         top.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 460, 220, 60));
 
         jLabel2.setText("Aplikasi Kepegawaian");
         top.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 50, -1, -1));
 
         jButton2.setText("Dashboard");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         top.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 220, 60));
 
         absensi.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/icons8-attendance-50.png"))); // NOI18N
         top.add(absensi, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 360, -1, -1));
 
         jButton3.setText("Pegawai");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         top.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 260, 220, 60));
 
         jButton4.setText("Absensi");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
         top.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 360, 220, 60));
 
         waktudankeluar.setBackground(new java.awt.Color(166, 74, 201));
@@ -242,14 +281,29 @@ public class AbsensiFrame extends javax.swing.JFrame {
         jButton5.setBackground(new java.awt.Color(52, 235, 134));
         jButton5.setForeground(new java.awt.Color(255, 255, 255));
         jButton5.setText("Tambah");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jButton6.setBackground(new java.awt.Color(52, 235, 134));
         jButton6.setForeground(new java.awt.Color(255, 255, 255));
         jButton6.setText("Ubah");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         jButton7.setBackground(new java.awt.Color(52, 235, 134));
         jButton7.setForeground(new java.awt.Color(255, 255, 255));
         jButton7.setText("Hapus");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel11.setText("Tanggal");
@@ -257,11 +311,20 @@ public class AbsensiFrame extends javax.swing.JFrame {
         jButton8.setBackground(new java.awt.Color(52, 235, 134));
         jButton8.setForeground(new java.awt.Color(255, 255, 255));
         jButton8.setText("Ekspor");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel12.setText("Cari Pegawai");
 
-        jTextField4.setText("jTextField2");
+        jTextField4.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField4KeyReleased(evt);
+            }
+        });
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -271,6 +334,11 @@ public class AbsensiFrame extends javax.swing.JFrame {
                 "Nama Pegawai", "Jam Masuk", "Jam Keluar", "Tanggal"
             }
         ));
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -378,6 +446,338 @@ public class AbsensiFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jLabel4MouseClicked
 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+      try {
+    if (jComboBox2.getSelectedItem() == null || 
+        jDateChooser2.getDate() == null || 
+        jLabel10.getText().isEmpty() || 
+        jLabel13.getText().isEmpty()) {
+
+        JOptionPane.showMessageDialog(null, 
+            "Data Absensi Belum Lengkap", 
+            "Gagal Tambah Data", 
+            JOptionPane.WARNING_MESSAGE);
+    } else {
+        // Ambil data dari input
+        String namaPegawai = jComboBox2.getSelectedItem().toString();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String tanggal = sdf.format(jDateChooser2.getDate());
+        String jamMasuk = jLabel10.getText();
+        String jamKeluar = jLabel13.getText();
+
+        // Ambil model JTable
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        boolean isUpdated = false;
+
+        // Loop melalui baris di JTable untuk mencari data dengan nama pegawai dan tanggal yang sama
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (model.getValueAt(i, 0).equals(namaPegawai) && 
+                model.getValueAt(i, 3).equals(tanggal)) {
+                // Jika nama pegawai dan tanggal sama, update jam keluar
+                model.setValueAt(jamKeluar, i, 2); // Kolom jam keluar
+                isUpdated = true;
+                break;
+            }
+        }
+
+        if (!isUpdated) {
+            // Jika data baru, tambahkan ke JTable dengan jam keluar default "00:00"
+            model.addRow(new Object[]{namaPegawai, jamMasuk, "00:00", tanggal});
+
+            // Tambahkan data ke database
+            String queryTambah = "INSERT INTO absensi (pegawai_id, jam_masuk, jam_keluar, tanggal) " +
+                                 "VALUES ((SELECT id FROM pegawai WHERE nama_pegawai = ?), ?, ?, ?)";
+            pst = conn.prepareStatement(queryTambah);
+            pst.setString(1, namaPegawai); // Nama Pegawai (ID diambil dengan subquery)
+            pst.setString(2, jamMasuk);    // Jam Masuk
+            pst.setString(3, "00:00");    // Jam Keluar default
+            pst.setString(4, tanggal);    // Tanggal
+            pst.executeUpdate();
+        } else {
+            // Update jam keluar di database
+            String queryUpdate = "UPDATE absensi SET jam_keluar = ? " +
+                                 "WHERE pegawai_id = (SELECT id FROM pegawai WHERE nama_pegawai = ?) AND tanggal = ?";
+            pst = conn.prepareStatement(queryUpdate);
+            pst.setString(1, jamKeluar);  // Jam Keluar
+            pst.setString(2, namaPegawai); // Nama Pegawai
+            pst.setString(3, tanggal);    // Tanggal
+            pst.executeUpdate();
+        }
+
+        JOptionPane.showMessageDialog(null, 
+            "Data Absensi Berhasil Diproses", 
+            "Sukses", 
+            JOptionPane.INFORMATION_MESSAGE);
+    }
+} catch (SQLException ex) {
+    Logger.getLogger(AbsensiFrame.class.getName()).log(Level.SEVERE, null, ex);
+    JOptionPane.showMessageDialog(null, 
+        "Terjadi kesalahan: " + ex.getMessage(), 
+        "Error", 
+        JOptionPane.ERROR_MESSAGE);
+}
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField4KeyReleased
+        TampilData();
+    }//GEN-LAST:event_jTextField4KeyReleased
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+      try {
+    // Validasi input
+    if (jComboBox2.getSelectedItem() == null || 
+        jComboBox2.getSelectedItem().toString().equals("Pilih Pegawai") || 
+        jDateChooser2.getDate() == null || 
+        jLabel10.getText().isEmpty() || 
+        jLabel13.getText().isEmpty()) {
+
+        JOptionPane.showMessageDialog(null, 
+            "Data Absensi Belum Lengkap", 
+            "Gagal Ubah Data", 
+            JOptionPane.WARNING_MESSAGE);
+    } else {
+        // Format tanggal menggunakan SimpleDateFormat
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss");
+
+        String tanggal = sdfDate.format(jDateChooser2.getDate());
+        String jamMasuk = jLabel10.getText();
+        String jamKeluar = jLabel13.getText();
+        String namaPegawai = jComboBox2.getSelectedItem().toString();
+
+        // Ambil ID pegawai berdasarkan nama
+        String queryCariPegawai = "SELECT id FROM pegawai WHERE nama_pegawai = ?";
+        pst = conn.prepareStatement(queryCariPegawai);
+        pst.setString(1, namaPegawai);
+        ResultSet rs = pst.executeQuery();
+
+        if (rs.next()) {
+            int pegawaiId = rs.getInt("id");
+
+            // Query untuk mengupdate data absensi
+            String queryUbah = "UPDATE absensi SET jam_masuk = ?, jam_keluar = ?, tanggal = ? WHERE pegawai_id = ? AND tanggal = ?";
+            pst = conn.prepareStatement(queryUbah);
+
+            // Set parameter query
+            pst.setString(1, jamMasuk); // Jam Masuk
+            pst.setString(2, jamKeluar); // Jam Keluar
+            pst.setString(3, tanggal); // Tanggal
+            pst.setInt(4, pegawaiId); // ID Pegawai
+            pst.setString(5, tanggal); // Tanggal (untuk memastikan data yang sama diubah)
+
+            // Eksekusi query
+            int rowsUpdated = pst.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                // Refresh tabel dan bersihkan input
+                TampilData();
+                bersih();
+
+                JOptionPane.showMessageDialog(null, 
+                    "Data Absensi Berhasil Diperbarui", 
+                    "Sukses", 
+                    JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, 
+                    "Data Absensi Tidak Ditemukan atau Tidak Ada Perubahan", 
+                    "Gagal Ubah Data", 
+                    JOptionPane.WARNING_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, 
+                "Pegawai Tidak Ditemukan", 
+                "Gagal Ubah Data", 
+                JOptionPane.WARNING_MESSAGE);
+        }
+    }
+} catch (SQLException ex) {
+    Logger.getLogger(AbsensiFrame.class.getName()).log(Level.SEVERE, null, ex);
+}
+
+
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+       try {
+        // Mendapatkan baris yang dipilih
+        int row = jTable1.getSelectedRow();
+
+        // Mendapatkan data dari JTable
+        String namaPegawai = jTable1.getValueAt(row, 0).toString(); // Nama Pegawai
+        String jamMasuk = jTable1.getValueAt(row, 1).toString();   // Jam Masuk
+        String jamKeluar = jTable1.getValueAt(row, 2).toString();  // Jam Keluar
+        String tanggal = jTable1.getValueAt(row, 3).toString();    // Tanggal
+
+        // Mengisi nilai ke ComboBox
+        jComboBox2.setSelectedItem(namaPegawai);
+
+        // Mengisi nilai ke TextField
+        jLabel10.setText(jamMasuk);
+        jLabel13.setText(jamKeluar);
+
+        // Parsing tanggal dari tabel ke JDateChooser
+        Date tanggalAbsensi = new SimpleDateFormat("yyyy-MM-dd").parse(tanggal);
+        jDateChooser2.setDate(tanggalAbsensi);
+
+        // Atur status tombol: tombol Tambah dinonaktifkan, tombol Ubah dan Hapus diaktifkan
+        jButton5.setEnabled(true);
+        jButton6.setEnabled(true);
+        jButton7.setEnabled(true);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, 
+            "Terjadi kesalahan saat memilih data di tabel", 
+            "Error", 
+            JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+       try {
+    if (jComboBox2.getSelectedItem() == null || 
+        jDateChooser2.getDate() == null) {
+
+        JOptionPane.showMessageDialog(null, 
+            "Data Absensi Belum Dipilih", 
+            "Gagal Hapus Data", 
+            JOptionPane.WARNING_MESSAGE);
+    } else {
+        int konfirmasi = JOptionPane.showConfirmDialog(null, 
+            "Apakah Anda yakin ingin menghapus data absensi ini?", 
+            "Konfirmasi Hapus", 
+            JOptionPane.YES_NO_OPTION);
+
+        if (konfirmasi == JOptionPane.YES_OPTION) {
+            // Ambil data dari input
+            String namaPegawai = jComboBox2.getSelectedItem().toString();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String tanggal = sdf.format(jDateChooser2.getDate());
+
+            // Query untuk menghapus data berdasarkan nama pegawai dan tanggal
+            String queryHapus = "DELETE FROM absensi WHERE pegawai_id = " +
+                                "(SELECT id FROM pegawai WHERE nama_pegawai = ?) AND tanggal = ?";
+            pst = conn.prepareStatement(queryHapus);
+            pst.setString(1, namaPegawai); // Nama Pegawai
+            pst.setString(2, tanggal);    // Tanggal
+
+            // Eksekusi query
+            int rowsAffected = pst.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, 
+                    "Data Absensi Berhasil Dihapus", 
+                    "Sukses", 
+                    JOptionPane.INFORMATION_MESSAGE);
+
+                // Refresh tabel dan bersihkan input
+                TampilData();
+                bersih();
+            } else {
+                JOptionPane.showMessageDialog(null, 
+                    "Data absensi tidak ditemukan", 
+                    "Gagal Hapus Data", 
+                    JOptionPane.WARNING_MESSAGE);
+            }
+        }
+    }
+} catch (SQLException ex) {
+    Logger.getLogger(AbsensiFrame.class.getName()).log(Level.SEVERE, null, ex);
+    JOptionPane.showMessageDialog(null, 
+        "Terjadi kesalahan: " + ex.getMessage(), 
+        "Error", 
+        JOptionPane.ERROR_MESSAGE);
+}
+
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+       try {
+    // Membuka dialog untuk memilih lokasi penyimpanan
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Pilih Lokasi Penyimpanan File CSV");
+    fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
+    // Filter file untuk CSV
+    FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
+    fileChooser.setFileFilter(filter);
+
+    int userSelection = fileChooser.showSaveDialog(this);
+    if (userSelection == JFileChooser.APPROVE_OPTION) {
+        File fileToSave = fileChooser.getSelectedFile();
+        String filePath = fileToSave.getAbsolutePath();
+
+        // Tambahkan ekstensi .csv jika belum ada
+        if (!filePath.endsWith(".csv")) {
+            filePath += ".csv";
+        }
+
+        // Membuat file CSV
+        FileWriter writer = new FileWriter(filePath);
+
+        // Header CSV
+        String[] header = {"ID", "Nama Pegawai", "Jam Masuk", "Jam Keluar", "Tanggal"};
+        for (int i = 0; i < header.length; i++) {
+            writer.append(header[i]);
+            if (i < header.length - 1) writer.append(","); // Pisahkan dengan koma
+        }
+        writer.append("\n");
+
+        // Isi data tabel dari database
+        String query = "SELECT absensi.id, pegawai.nama_pegawai, absensi.jam_masuk, absensi.jam_keluar, absensi.tanggal " +
+                       "FROM absensi " +
+                       "INNER JOIN pegawai ON absensi.pegawai_id = pegawai.id";
+        pst = conn.prepareStatement(query);
+        ResultSet rs = pst.executeQuery();
+
+        while (rs.next()) {
+            writer.append(rs.getString("id")).append(",");
+            writer.append(rs.getString("nama_pegawai")).append(",");
+            writer.append(rs.getString("jam_masuk")).append(",");
+            writer.append(rs.getString("jam_keluar")).append(",");
+            writer.append(rs.getString("tanggal")).append("\n");
+        }
+
+        writer.flush();
+        writer.close();
+
+        JOptionPane.showMessageDialog(null, "Data berhasil diekspor ke file CSV!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+    }
+} catch (Exception e) {
+    JOptionPane.showMessageDialog(null, "Terjadi kesalahan: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    e.printStackTrace();
+}
+
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // Membuka form Pegawai
+        KaryawanFrame KaryawanFrame = new KaryawanFrame();
+        KaryawanFrame.setVisible(true); // Tampilkan form Absensi
+        this.dispose(); // Tutup form Dashboard (opsional, jika diperlukan)
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // Membuka form DAshboard
+        DashboardFrame DashboardFrame = new DashboardFrame();
+        DashboardFrame.setVisible(true); // Tampilkan form Absensi
+        this.dispose(); // Tutup form Dashboard (opsional, jika diperlukan)
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // Membuka form Absensi
+        AbsensiFrame AbsensiFrame = new AbsensiFrame();
+        AbsensiFrame.setVisible(true); // Tampilkan form Absensi
+        this.dispose(); // Tutup form Dashboard (opsional, jika diperlukan)
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // Membuka form Gaji
+        GajiFrame GajiFrame = new GajiFrame();
+        GajiFrame.setVisible(true); // Tampilkan form Absensi
+        this.dispose(); // Tutup form Dashboard (opsional, jika diperlukan)
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -424,4 +824,69 @@ public class AbsensiFrame extends javax.swing.JFrame {
     private javax.swing.JPanel top;
     private javax.swing.JPanel waktudankeluar;
     // End of variables declaration//GEN-END:variables
+private void TampilData() {
+    try {
+        // Judul kolom pada tabel
+        String[] judul = {"Nama Pegawai", "Jam Masuk", "Jam Keluar", "Tanggal"};
+        DefaultTableModel dtm = new DefaultTableModel(null, judul);
+        jTable1.setModel(dtm);
+
+        // Query untuk menampilkan semua data
+        String sql = "SELECT p.nama_pegawai, a.jam_masuk, a.jam_keluar, a.tanggal " +
+                     "FROM absensi a INNER JOIN pegawai p ON a.pegawai_id = p.id";
+
+        // Jika ada pencarian berdasarkan nama pegawai
+        if (!jTextField4.getText().isEmpty()) {
+            sql += " WHERE p.nama_pegawai LIKE ?";
+        }
+
+        // Siapkan query
+        pst = conn.prepareStatement(sql);
+
+        // Jika ada pencarian, tambahkan parameter pencarian
+        if (!jTextField4.getText().isEmpty()) {
+            pst.setString(1, "%" + jTextField4.getText() + "%");
+        }
+
+        // Eksekusi query
+        ResultSet rs = pst.executeQuery();
+
+        // Loop melalui hasil query
+        while (rs.next()) {
+            // Ambil data dari setiap kolom di tabel
+            String[] data = {
+                rs.getString("nama_pegawai"),
+                rs.getString("jam_masuk"),
+                rs.getString("jam_keluar"),
+                rs.getString("tanggal")
+            };
+
+            // Tambahkan data ke model tabel
+            dtm.addRow(data);
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(AbsensiFrame.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}
+
+private void bersih() {
+    jDateChooser2.setDate(null);    // Reset tanggal
+
+}
+
+
+private void loadPegawaiToComboBox() {
+    try {
+        String query = "SELECT nama_pegawai FROM pegawai";
+        pst = conn.prepareStatement(query);
+        ResultSet rs = pst.executeQuery();
+        jComboBox2.removeAllItems();
+        while (rs.next()) {
+            jComboBox2.addItem(rs.getString("nama_pegawai"));
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(AbsensiFrame.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}
+
 }

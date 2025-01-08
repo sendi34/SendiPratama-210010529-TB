@@ -4,10 +4,21 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -26,11 +37,17 @@ public class GajiFrame extends javax.swing.JFrame {
     public GajiFrame() {
         setUndecorated(true); // Menghilangkan border dan title bar  
         initComponents();
+        TampilData();
+        bersih();
+        loadPegawaiToComboBox();
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Maksimalkan ke layar penuh  
         setFont();
         tampilkanTanggal();
         tampilkanWaktu();
     }
+    String id;
+    Connection conn = Koneksi.getKoneksi();
+    PreparedStatement pst;
     
     private void setFont(){
         try {
@@ -77,6 +94,7 @@ public class GajiFrame extends javax.swing.JFrame {
                 SimpleDateFormat formatWaktu = new SimpleDateFormat("HH:mm:ss");
                 String waktu = formatWaktu.format(new Date());
                 jLabel3.setText(waktu);
+                
             }
         });
         timer.start();
@@ -124,6 +142,8 @@ public class GajiFrame extends javax.swing.JFrame {
         jComboBox2 = new javax.swing.JComboBox<>();
         jLabel10 = new javax.swing.JLabel();
         jButton9 = new javax.swing.JButton();
+        jTextField5 = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridLayout(1, 0));
@@ -141,21 +161,41 @@ public class GajiFrame extends javax.swing.JFrame {
         top.add(gaji, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 460, -1, -1));
 
         jButton1.setText("Gaji");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         top.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 460, 220, 60));
 
         jLabel2.setText("Aplikasi Kepegawaian");
         top.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 50, -1, -1));
 
         jButton2.setText("Dashboard");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         top.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 220, 60));
 
         absensi.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/icons8-attendance-50.png"))); // NOI18N
         top.add(absensi, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 360, -1, -1));
 
         jButton3.setText("Pegawai");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         top.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 260, 220, 60));
 
         jButton4.setText("Absensi");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
         top.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 360, 220, 60));
 
         waktudankeluar.setBackground(new java.awt.Color(166, 74, 201));
@@ -206,27 +246,37 @@ public class GajiFrame extends javax.swing.JFrame {
         jLabel5.setText("Nama Pegawai");
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel6.setText("Potongan");
+        jLabel6.setText("Gaji Pokok");
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel7.setText("Total Gaji");
-
-        jTextField2.setText("jTextField2");
-
-        jTextField3.setEditable(false);
-        jTextField3.setText("jTextField3");
+        jLabel7.setText("Potongan");
 
         jButton5.setBackground(new java.awt.Color(52, 235, 134));
         jButton5.setForeground(new java.awt.Color(255, 255, 255));
         jButton5.setText("Tambah");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jButton6.setBackground(new java.awt.Color(52, 235, 134));
         jButton6.setForeground(new java.awt.Color(255, 255, 255));
         jButton6.setText("Ubah");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         jButton7.setBackground(new java.awt.Color(52, 235, 134));
         jButton7.setForeground(new java.awt.Color(255, 255, 255));
         jButton7.setText("Hapus");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel11.setText("Tanggal ");
@@ -234,20 +284,34 @@ public class GajiFrame extends javax.swing.JFrame {
         jButton8.setBackground(new java.awt.Color(52, 235, 134));
         jButton8.setForeground(new java.awt.Color(255, 255, 255));
         jButton8.setText("Ekspor");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel12.setText("Cari Pegawai");
 
-        jTextField4.setText("jTextField2");
+        jTextField4.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField4KeyReleased(evt);
+            }
+        });
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Nama Pegawai", "Potongan", "Total Gaji", "Tanggal"
+                "Nama Pegawai", "Gaji Pokok", "Potongan", "Tanggal", "Total Gaji"
             }
         ));
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -258,6 +322,16 @@ public class GajiFrame extends javax.swing.JFrame {
         jButton9.setBackground(new java.awt.Color(52, 235, 134));
         jButton9.setForeground(new java.awt.Color(255, 255, 255));
         jButton9.setText("Hitung");
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
+
+        jTextField5.setEditable(false);
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        jLabel8.setText("Total Gaji");
 
         javax.swing.GroupLayout mainLayout = new javax.swing.GroupLayout(main);
         main.setLayout(mainLayout);
@@ -266,7 +340,9 @@ public class GajiFrame extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane1)
+                    .addGroup(mainLayout.createSequentialGroup()
+                        .addComponent(jScrollPane1)
+                        .addGap(87, 87, 87))
                     .addGroup(mainLayout.createSequentialGroup()
                         .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(mainLayout.createSequentialGroup()
@@ -281,7 +357,7 @@ public class GajiFrame extends javax.swing.JFrame {
                                         .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                             .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jLabel10))))
                             .addGroup(mainLayout.createSequentialGroup()
                                 .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -295,16 +371,24 @@ public class GajiFrame extends javax.swing.JFrame {
                         .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel12)
-                                .addGroup(mainLayout.createSequentialGroup()
-                                    .addGap(191, 191, 191)
-                                    .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainLayout.createSequentialGroup()
-                                .addComponent(jLabel11)
-                                .addGap(53, 53, 53)
-                                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addGap(87, 87, 87))
+                            .addGroup(mainLayout.createSequentialGroup()
+                                .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel12)
+                                        .addGroup(mainLayout.createSequentialGroup()
+                                            .addGap(191, 191, 191)
+                                            .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainLayout.createSequentialGroup()
+                                        .addComponent(jLabel11)
+                                        .addGap(53, 53, 53)
+                                        .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(87, 87, 87))
+                            .addGroup(mainLayout.createSequentialGroup()
+                                .addGap(20, 20, 20)
+                                .addComponent(jLabel8)
+                                .addGap(47, 47, 47)
+                                .addComponent(jTextField5)
+                                .addGap(79, 79, 79))))))
         );
         mainLayout.setVerticalGroup(
             mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -316,16 +400,22 @@ public class GajiFrame extends javax.swing.JFrame {
                     .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel5)
                         .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(22, 22, 22)
                 .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel10))
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mainLayout.createSequentialGroup()
+                        .addGap(22, 22, 22)
+                        .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel10)))
+                    .addGroup(mainLayout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(55, 55, 55)
                 .addGroup(mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -360,6 +450,407 @@ public class GajiFrame extends javax.swing.JFrame {
             System.exit(0); // Keluar dari aplikasi
         }
     }//GEN-LAST:event_jLabel4MouseClicked
+
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+      try {
+        // Ambil nilai dari JTextField
+        String gajiPokokStr = jTextField2.getText();
+        String potonganStr = jTextField3.getText();
+        
+        // Validasi input tidak boleh kosong
+        if (gajiPokokStr.isEmpty() || potonganStr.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Gaji Pokok dan Potongan tidak boleh kosong.", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Konversi input ke tipe double
+        double gajiPokok = Double.parseDouble(gajiPokokStr);
+        double potongan = Double.parseDouble(potonganStr);
+
+        // Validasi potongan antara 0% hingga 100%
+        if (potongan < 0 || potongan > 100) {
+            JOptionPane.showMessageDialog(null, "Potongan harus di antara 0% hingga 100%.", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Hitung total gaji
+        double totalGaji = gajiPokok - (gajiPokok * (potongan / 100));
+
+        // Tampilkan hasil di JTextField5
+        jTextField5.setText(String.format("%.2f", totalGaji));
+    } catch (NumberFormatException ex) {
+        // Tangani kesalahan format angka
+        JOptionPane.showMessageDialog(null, "Input harus berupa angka yang valid.", "Kesalahan", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+   try {
+    // Validasi input tidak boleh kosong
+    if (
+        jTextField2.getText().isEmpty() || 
+        jTextField3.getText().isEmpty() || 
+        jTextField5.getText().isEmpty() || 
+        jComboBox2.getSelectedItem().toString().isEmpty() ||  // Misalnya ada field Nama Pegawai
+        jDateChooser2.getDate() == null) {
+
+        JOptionPane.showMessageDialog(null, 
+            "Data Gaji Belum Lengkap", 
+            "Gagal Tambah Data", 
+            JOptionPane.WARNING_MESSAGE);
+    } else {
+        // Ambil dan bersihkan input
+        String gajiPokokStr = jTextField2.getText().replace(",", "");  
+        String potonganStr = jTextField3.getText().replace(",", ""); 
+        String totalGajiStr = jTextField5.getText().replace(",", "");  
+        String namaPegawai = jComboBox2.getSelectedItem().toString();  
+
+        // Validasi format angka
+        if (!gajiPokokStr.matches("\\d+(\\.\\d+)?") || 
+            !potonganStr.matches("\\d+(\\.\\d+)?") || 
+            !totalGajiStr.matches("\\d+(\\.\\d+)?")) {
+            JOptionPane.showMessageDialog(null, 
+                "Gaji Pokok, Potongan, dan Total Gaji harus berupa angka.", 
+                "Kesalahan", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Parsing angka
+        double gajiPokok = Double.parseDouble(gajiPokokStr);
+        double potongan = Double.parseDouble(potonganStr);
+        double totalGaji = Double.parseDouble(totalGajiStr);
+
+        // Validasi nilai potongan dan gaji
+        if (potongan < 0 || potongan > 100) {
+            JOptionPane.showMessageDialog(null, 
+                "Potongan harus di antara 0% hingga 100%.", 
+                "Kesalahan", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Hitung total gaji otomatis berdasarkan potongan jika perlu
+        totalGaji = gajiPokok - (gajiPokok * (potongan / 100));
+        
+        // Pastikan total gaji yang dihitung tidak melebihi batas kolom gaji
+        if (totalGaji < 0) {
+            JOptionPane.showMessageDialog(null, 
+                "Total gaji tidak boleh negatif.", 
+                "Kesalahan", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Format tanggal
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String tanggal = sdf.format(jDateChooser2.getDate());
+
+        // Query untuk memasukkan data ke tabel gaji menggunakan subquery untuk mendapatkan pegawai_id
+        String queryTambah = "INSERT INTO gaji (pegawai_id, gaji_pokok, potongan, total_gaji, tanggal) " +
+                             "VALUES ((SELECT id FROM pegawai WHERE nama_pegawai = ?), ?, ?, ?, ?)";
+        pst = conn.prepareStatement(queryTambah);
+
+        // Set parameter ke dalam query
+        pst.setString(1, namaPegawai); // Nama Pegawai (ID diambil dengan subquery)
+        pst.setDouble(2, gajiPokok);
+        pst.setDouble(3, potongan);
+        pst.setDouble(4, totalGaji);
+        pst.setString(5, tanggal);
+
+        // Eksekusi query
+        pst.executeUpdate();
+
+        // Refresh tabel dan bersihkan input
+        TampilData();
+        bersih();
+
+        JOptionPane.showMessageDialog(null, 
+            "Data Gaji Berhasil Ditambahkan", 
+            "Sukses", 
+            JOptionPane.INFORMATION_MESSAGE);
+    }
+} catch (SQLException ex) {
+    Logger.getLogger(GajiFrame.class.getName()).log(Level.SEVERE, null, ex);
+} catch (NumberFormatException ex) {
+    JOptionPane.showMessageDialog(null, 
+        "Masukkan angka yang valid untuk Gaji Pokok, Potongan, dan Total Gaji.", 
+        "Kesalahan", 
+        JOptionPane.ERROR_MESSAGE);
+}
+
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField4KeyReleased
+        TampilData();
+    }//GEN-LAST:event_jTextField4KeyReleased
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        try {
+    // Validasi input tidak boleh kosong
+    if (
+        jTextField2.getText().isEmpty() || 
+        jTextField3.getText().isEmpty() || 
+        jTextField5.getText().isEmpty() || 
+        jDateChooser2.getDate() == null) { // Validasi input tanpa Nama Pegawai
+
+        JOptionPane.showMessageDialog(null, 
+            "Data Gaji Belum Lengkap", 
+            "Gagal Ubah Data", 
+            JOptionPane.WARNING_MESSAGE);
+    } else {
+        // Ambil dan bersihkan input
+        String gajiPokokStr = jTextField2.getText().replace(",", "");  
+        String potonganStr = jTextField3.getText().replace(",", ""); 
+        String totalGajiStr = jTextField5.getText().replace(",", "");  
+        String namaPegawai = jComboBox2.getSelectedItem().toString();  
+
+        // Validasi format angka
+        if (!gajiPokokStr.matches("\\d+(\\.\\d+)?") || 
+            !potonganStr.matches("\\d+(\\.\\d+)?") || 
+            !totalGajiStr.matches("\\d+(\\.\\d+)?")) {
+            JOptionPane.showMessageDialog(null, 
+                "Gaji Pokok, Potongan, dan Total Gaji harus berupa angka.", 
+                "Kesalahan", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Parsing angka
+        double gajiPokok = Double.parseDouble(gajiPokokStr);
+        double potongan = Double.parseDouble(potonganStr);
+        double totalGaji = Double.parseDouble(totalGajiStr);
+
+        // Validasi nilai potongan dan gaji
+        if (potongan < 0 || potongan > 100) {
+            JOptionPane.showMessageDialog(null, 
+                "Potongan harus di antara 0% hingga 100%.", 
+                "Kesalahan", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Hitung total gaji otomatis berdasarkan potongan jika perlu
+        totalGaji = gajiPokok - (gajiPokok * (potongan / 100));
+        
+        // Pastikan total gaji yang dihitung tidak melebihi batas kolom gaji
+        if (totalGaji < 0) {
+            JOptionPane.showMessageDialog(null, 
+                "Total gaji tidak boleh negatif.", 
+                "Kesalahan", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Format tanggal
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String tanggal = sdf.format(jDateChooser2.getDate());
+
+        // Query untuk mengupdate data gaji, hanya mengupdate berdasarkan nama pegawai dan tanggal
+        String queryUbah = "UPDATE gaji SET gaji_pokok=?, potongan=?, total_gaji=?, tanggal=? " +
+                           "WHERE pegawai_id = (SELECT id FROM pegawai WHERE nama_pegawai = ?) AND tanggal = ?";
+        pst = conn.prepareStatement(queryUbah);
+
+        // Set parameter ke dalam query
+        pst.setDouble(1, gajiPokok); // Gaji Pokok
+        pst.setDouble(2, potongan);   // Potongan
+        pst.setDouble(3, totalGaji);  // Total Gaji
+        pst.setString(4, tanggal);    // Tanggal
+        pst.setString(5, namaPegawai); // Nama Pegawai (ID diambil dengan subquery)
+        pst.setString(6, tanggal);    // Menyaring berdasarkan tanggal gaji yang dipilih
+
+        // Eksekusi query
+        pst.executeUpdate();
+
+        // Refresh tabel dan bersihkan input
+        TampilData();
+        bersih();
+
+        JOptionPane.showMessageDialog(null, 
+            "Data Gaji Berhasil Diperbarui", 
+            "Sukses", 
+            JOptionPane.INFORMATION_MESSAGE);
+    }
+} catch (SQLException ex) {
+    Logger.getLogger(GajiFrame.class.getName()).log(Level.SEVERE, null, ex);
+} catch (NumberFormatException ex) {
+    JOptionPane.showMessageDialog(null, 
+        "Masukkan angka yang valid untuk Gaji Pokok, Potongan, dan Total Gaji.", 
+        "Kesalahan", 
+        JOptionPane.ERROR_MESSAGE);
+}
+
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        int row = jTable1.getSelectedRow(); // Mendapatkan baris yang dipilih
+
+        // Mendapatkan Nama Pegawai dari kolom pertama
+        String namaPegawai = jTable1.getValueAt(row, 0).toString();
+        
+        // Mengisi nilai ke TextField sesuai data di baris yang dipilih
+        jTextField2.setText(jTable1.getValueAt(row, 1).toString());  // Gaji Pokok
+        jTextField3.setText(jTable1.getValueAt(row, 2).toString());  // Potongan
+        jTextField5.setText(jTable1.getValueAt(row, 3).toString());  // Total Gaji
+        
+        try {
+            // Parsing tanggal dari tabel ke JDateChooser
+            Date tanggal = new SimpleDateFormat("yyyy-MM-dd").parse(jTable1.getValueAt(row, 4).toString());
+            jDateChooser2.setDate(tanggal); // Tanggal
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        // Set Nama Pegawai pada ComboBox (sesuaikan dengan nama pegawai yang dipilih)
+        jComboBox2.setSelectedItem(namaPegawai);
+
+        // Atur status tombol: tombol Tambah dinonaktifkan, tombol Ubah dan Hapus diaktifkan
+        jButton5.setEnabled(true);  // Ubah
+        jButton6.setEnabled(true);  // Hapus
+        jButton7.setEnabled(true);  // Tombol Hapus
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        try {
+    // Validasi input: apakah data sudah dipilih
+    if (jTextField2.getText().isEmpty() || 
+        jTextField3.getText().isEmpty() || 
+        jTextField5.getText().isEmpty() || 
+        jDateChooser2.getDate() == null) {
+        
+        JOptionPane.showMessageDialog(null, 
+            "Data Gaji Belum Dipilih", 
+            "Gagal Hapus Data", 
+            JOptionPane.WARNING_MESSAGE);
+    } else {
+        // Konfirmasi sebelum menghapus
+        int konfirmasi = JOptionPane.showConfirmDialog(null, 
+            "Apakah Anda yakin ingin menghapus data gaji ini?", 
+            "Konfirmasi Hapus", 
+            JOptionPane.YES_NO_OPTION);
+        
+        if (konfirmasi == JOptionPane.YES_OPTION) {
+            // Format tanggal
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String tanggal = sdf.format(jDateChooser2.getDate());
+
+            // Query untuk menghapus data gaji berdasarkan nama pegawai dan tanggal
+            String queryHapus = "DELETE FROM gaji WHERE pegawai_id = (SELECT id FROM pegawai WHERE nama_pegawai = ?) AND tanggal = ?";
+            pst = conn.prepareStatement(queryHapus);
+            pst.setString(1, jComboBox2.getSelectedItem().toString()); // Nama Pegawai
+            pst.setString(2, tanggal);  // Tanggal Gaji
+
+            // Eksekusi query
+            pst.executeUpdate();
+
+            JOptionPane.showMessageDialog(null, 
+                "Data Gaji Berhasil Dihapus", 
+                "Sukses", 
+                JOptionPane.INFORMATION_MESSAGE);
+
+            // Refresh tabel dan bersihkan input
+            TampilData();
+            bersih();
+        }
+    }
+} catch (SQLException ex) {
+    Logger.getLogger(GajiFrame.class.getName()).log(Level.SEVERE, null, ex);
+} catch (Exception ex) {
+    JOptionPane.showMessageDialog(null, 
+        "Terjadi kesalahan saat menghapus data gaji.", 
+        "Kesalahan", 
+        JOptionPane.ERROR_MESSAGE);
+}
+
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+       try {
+    // Membuka dialog untuk memilih lokasi penyimpanan file
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Pilih Lokasi Penyimpanan File CSV");
+    fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
+    // Filter file untuk CSV
+    FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
+    fileChooser.setFileFilter(filter);
+
+    int userSelection = fileChooser.showSaveDialog(this);
+    if (userSelection == JFileChooser.APPROVE_OPTION) {
+        File fileToSave = fileChooser.getSelectedFile();
+        String filePath = fileToSave.getAbsolutePath();
+
+        // Tambahkan ekstensi .csv jika belum ada
+        if (!filePath.endsWith(".csv")) {
+            filePath += ".csv";
+        }
+
+        // Membuat file CSV
+        FileWriter writer = new FileWriter(filePath);
+
+        // Header CSV untuk gaji
+        String[] header = {"ID Pegawai", "Nama Pegawai", "Gaji Pokok", "Potongan", "Total Gaji", "Tanggal"};
+        for (int i = 0; i < header.length; i++) {
+            writer.append(header[i]);
+            if (i < header.length - 1) writer.append(","); // Pisahkan dengan koma
+        }
+        writer.append("\n");
+
+        // Isi data tabel gaji dengan relasi pegawai
+        String query = "SELECT gaji.pegawai_id, pegawai.nama_pegawai, gaji.gaji_pokok, gaji.potongan, gaji.total_gaji, gaji.tanggal " +
+                       "FROM gaji " +
+                       "INNER JOIN pegawai ON gaji.pegawai_id = pegawai.id";
+        pst = conn.prepareStatement(query);
+        ResultSet rs = pst.executeQuery();
+
+        while (rs.next()) {
+            writer.append(rs.getString("pegawai_id")).append(",");
+            writer.append(rs.getString("nama_pegawai")).append(",");
+            writer.append(rs.getString("gaji_pokok")).append(",");
+            writer.append(rs.getString("potongan")).append(",");
+            writer.append(rs.getString("total_gaji")).append(",");
+            writer.append(rs.getString("tanggal")).append("\n");
+        }
+
+        writer.flush();
+        writer.close();
+
+        JOptionPane.showMessageDialog(null, "Data Gaji berhasil diekspor ke file CSV!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+    }
+} catch (Exception e) {
+    JOptionPane.showMessageDialog(null, "Terjadi kesalahan: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    e.printStackTrace();
+}
+
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // Membuka form Dashboard
+        DashboardFrame DashboardFrame = new DashboardFrame();
+        DashboardFrame.setVisible(true); // Tampilkan form Absensi
+        this.dispose(); // Tutup form Dashboard (opsional, jika diperlukan)
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // Membuka form Pegawai
+        KaryawanFrame KaryawanFrame = new KaryawanFrame();
+        KaryawanFrame.setVisible(true); // Tampilkan form Absensi
+        this.dispose(); // Tutup form Dashboard (opsional, jika diperlukan)
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+         // Membuka form Absensi
+        AbsensiFrame AbsensiFrame = new AbsensiFrame();
+        AbsensiFrame.setVisible(true); // Tampilkan form Absensi
+        this.dispose(); // Tutup form Dashboard (opsional, jika diperlukan)
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // Membuka form Gaji
+        GajiFrame GajiFrame = new GajiFrame();
+        GajiFrame.setVisible(true); // Tampilkan form Absensi
+        this.dispose(); // Tutup form Dashboard (opsional, jika diperlukan)
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -399,14 +890,84 @@ public class GajiFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
+    private javax.swing.JTextField jTextField5;
     private javax.swing.JPanel main;
     private javax.swing.JLabel pegawai;
     private javax.swing.JPanel top;
     private javax.swing.JPanel waktudankeluar;
     // End of variables declaration//GEN-END:variables
+private void loadPegawaiToComboBox() {
+    try {
+        String query = "SELECT nama_pegawai FROM pegawai";
+        pst = conn.prepareStatement(query);
+        ResultSet rs = pst.executeQuery();
+        jComboBox2.removeAllItems();
+        while (rs.next()) {
+            jComboBox2.addItem(rs.getString("nama_pegawai"));
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(AbsensiFrame.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}
+
+public void TampilData() {
+    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+    model.setRowCount(0);  // Menghapus data yang lama
+    
+    // Menambahkan judul kolom yang sesuai dengan kolom tabel gaji
+    String[] columnNames = {"Nama Pegawai", "Gaji Pokok", "Potongan", "Total Gaji", "Tanggal"};
+    model.setColumnIdentifiers(columnNames);
+
+    try {
+        // Query dasar untuk mengambil data gaji
+        String query = "SELECT pegawai.nama_pegawai, gaji.gaji_pokok, gaji.potongan, gaji.total_gaji, gaji.tanggal " +
+                       "FROM gaji INNER JOIN pegawai ON gaji.pegawai_id = pegawai.id";
+        
+        // Jika ada pencarian berdasarkan nama pegawai, tambahkan kondisi WHERE
+        if (!jTextField4.getText().isEmpty()) {
+            query += " WHERE pegawai.nama_pegawai LIKE ?";
+        }
+        
+        // Siapkan query
+        pst = conn.prepareStatement(query);
+
+        // Jika ada pencarian, tambahkan parameter pencarian
+        if (!jTextField4.getText().isEmpty()) {
+            pst.setString(1, "%" + jTextField4.getText() + "%");
+        }
+
+        // Eksekusi query
+        ResultSet rs = pst.executeQuery();
+
+        // Loop melalui hasil query dan menambahkannya ke tabel
+        while (rs.next()) {
+            Object[] row = new Object[5];  // Hanya ada 5 kolom yang ditampilkan
+            row[0] = rs.getString("nama_pegawai");  // Nama Pegawai
+            row[1] = rs.getDouble("gaji_pokok");   // Gaji Pokok
+            row[2] = rs.getDouble("potongan");     // Potongan
+            row[3] = rs.getDouble("total_gaji");   // Total Gaji
+            row[4] = rs.getDate("tanggal");        // Tanggal
+
+            model.addRow(row);  // Menambahkan data ke tabel
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(GajiFrame.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}
+
+
+
+private void bersih() {
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jTextField5.setText("");
+        jDateChooser2.setDate(null);
+    }
+
 }

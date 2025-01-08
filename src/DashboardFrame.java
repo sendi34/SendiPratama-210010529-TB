@@ -113,6 +113,11 @@ public class DashboardFrame extends javax.swing.JFrame {
         top.add(gaji, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 460, -1, -1));
 
         jButton1.setText("Gaji");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         top.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 460, 220, 60));
 
         jLabel2.setText("Aplikasi Kepegawaian");
@@ -130,9 +135,19 @@ public class DashboardFrame extends javax.swing.JFrame {
         top.add(absensi, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 360, -1, -1));
 
         jButton3.setText("Pegawai");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         top.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 260, 220, 60));
 
         jButton4.setText("Absensi");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
         top.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 360, 220, 60));
 
         waktudankeluar.setBackground(new java.awt.Color(166, 74, 201));
@@ -222,6 +237,27 @@ public class DashboardFrame extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+         // Membuka form Pegawai
+        KaryawanFrame KaryawanFrame = new KaryawanFrame();
+        KaryawanFrame.setVisible(true); // Tampilkan form Absensi
+        this.dispose(); // Tutup form Dashboard (opsional, jika diperlukan)
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+         // Membuka form Absensi
+        AbsensiFrame AbsensiFrame = new AbsensiFrame();
+        AbsensiFrame.setVisible(true); // Tampilkan form Absensi
+        this.dispose(); // Tutup form Dashboard (opsional, jika diperlukan)
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+         // Membuka form Gaji
+        GajiFrame GajiFrame = new GajiFrame();
+        GajiFrame.setVisible(true); // Tampilkan form Absensi
+        this.dispose(); // Tutup form Dashboard (opsional, jika diperlukan)
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
