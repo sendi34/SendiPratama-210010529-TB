@@ -1,5 +1,6 @@
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.RowFilter;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -732,6 +734,10 @@ public class KaryawanFrame extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         FlatMacLightLaf.setup();
+        UIManager.put("TableHeader.background", new Color(76,48,36));
+        UIManager.put("TableHeader.foreground", Color.white);
+        UIManager.put("Table.selectionBackground", Color.black);
+        UIManager.put("Component.borderColor", new Color(76,48,36));
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new KaryawanFrame().setVisible(true);
@@ -782,7 +788,7 @@ public class KaryawanFrame extends javax.swing.JFrame {
 private void TampilData() {
     try {
         // Judul kolom pada tabel
-        String[] judul = {"ID", "Nama Pegawai", "NIP", "Tempat", "Tanggal Lahir", "Agama", "Jenis Kelamin", "Tanggal Masuk Kerja"};
+        String[] judul = {"Nama Pegawai", "NIP", "Tempat", "Tanggal Lahir", "Agama", "Jenis Kelamin", "Tanggal Masuk Kerja"};
         DefaultTableModel dtm = new DefaultTableModel(null, judul);
         jTable1.setModel(dtm);
 
@@ -808,8 +814,7 @@ private void TampilData() {
         // Loop melalui hasil query
         while (rs.next()) {
             // Ambil data dari setiap kolom di tabel
-            String[] data = {
-                rs.getString("id"),
+            String[] data = {      
                 rs.getString("nama_pegawai"),
                 rs.getString("nip"),
                 rs.getString("tempat"),

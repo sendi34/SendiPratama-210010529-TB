@@ -2,10 +2,12 @@
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
+import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -146,6 +148,10 @@ public class LoginFrame extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         FlatMacLightLaf.setup();
+        UIManager.put("TableHeader.background", new Color(76,48,36));
+        UIManager.put("TableHeader.foreground", Color.white);
+        UIManager.put("Table.selectionBackground", Color.black);
+        UIManager.put("Component.borderColor", new Color(76,48,36));
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {

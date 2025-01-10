@@ -1,5 +1,6 @@
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -18,6 +19,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
@@ -783,6 +785,10 @@ public class AbsensiFrame extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         FlatMacLightLaf.setup();
+        UIManager.put("TableHeader.background", new Color(76,48,36));
+        UIManager.put("TableHeader.foreground", Color.white);
+        UIManager.put("Table.selectionBackground", Color.black);
+        UIManager.put("Component.borderColor", new Color(76,48,36));
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new AbsensiFrame().setVisible(true);
