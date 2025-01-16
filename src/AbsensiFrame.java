@@ -527,11 +527,11 @@ public class AbsensiFrame extends javax.swing.JFrame {
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
       try {
     // Validasi input
-    if (jComboBox2.getSelectedItem() == null || 
+    if (jComboBox2.getSelectedItem() == null ||  // Nama Pegawai
         jComboBox2.getSelectedItem().toString().equals("Pilih Pegawai") || 
-        jDateChooser2.getDate() == null || 
-        jLabel10.getText().isEmpty() || 
-        jLabel13.getText().isEmpty()) {
+        jDateChooser2.getDate() == null ||       // Tanggal Absensi
+        jLabel10.getText().isEmpty() ||          // Jam Masuk
+        jLabel13.getText().isEmpty()) {          // Jam Keluar
 
         JOptionPane.showMessageDialog(null, 
             "Data Absensi Belum Lengkap", 
@@ -540,60 +540,54 @@ public class AbsensiFrame extends javax.swing.JFrame {
     } else {
         // Format tanggal menggunakan SimpleDateFormat
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss");
-
         String tanggal = sdfDate.format(jDateChooser2.getDate());
         String jamMasuk = jLabel10.getText();
         String jamKeluar = jLabel13.getText();
         String namaPegawai = jComboBox2.getSelectedItem().toString();
 
-        // Ambil ID pegawai berdasarkan nama
-        String queryCariPegawai = "SELECT id FROM pegawai WHERE nama_pegawai = ?";
-        pst = conn.prepareStatement(queryCariPegawai);
-        pst.setString(1, namaPegawai);
-        ResultSet rs = pst.executeQuery();
+        // Query untuk mengupdate data absensi berdasarkan nama pegawai dan tanggal
+        String queryUbah = "UPDATE absensi " +
+                           "SET jam_masuk = ?, jam_keluar = ? " +
+                           "WHERE pegawai_id = (SELECT id FROM pegawai WHERE nama_pegawai = ?) " +
+                           "AND tanggal = ?";
+        pst = conn.prepareStatement(queryUbah);
 
-        if (rs.next()) {
-            int pegawaiId = rs.getInt("id");
+        // Set parameter query
+        pst.setString(1, jamMasuk); // Jam Masuk
+        pst.setString(2, jamKeluar); // Jam Keluar
+        pst.setString(3, namaPegawai); // Nama Pegawai
+        pst.setString(4, tanggal); // Tanggal
 
-            // Query untuk mengupdate data absensi
-            String queryUbah = "UPDATE absensi SET jam_masuk = ?, jam_keluar = ?, tanggal = ? WHERE pegawai_id = ? AND tanggal = ?";
-            pst = conn.prepareStatement(queryUbah);
+        // Eksekusi query
+        int rowsUpdated = pst.executeUpdate();
 
-            // Set parameter query
-            pst.setString(1, jamMasuk); // Jam Masuk
-            pst.setString(2, jamKeluar); // Jam Keluar
-            pst.setString(3, tanggal); // Tanggal
-            pst.setInt(4, pegawaiId); // ID Pegawai
-            pst.setString(5, tanggal); // Tanggal (untuk memastikan data yang sama diubah)
+        if (rowsUpdated > 0) {
+            // Refresh tabel dan bersihkan input
+            TampilData();
+            bersih();
 
-            // Eksekusi query
-            int rowsUpdated = pst.executeUpdate();
-
-            if (rowsUpdated > 0) {
-                // Refresh tabel dan bersihkan input
-                TampilData();
-                bersih();
-
-                JOptionPane.showMessageDialog(null, 
-                    "Data Absensi Berhasil Diperbarui", 
-                    "Sukses", 
-                    JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null, 
-                    "Data Absensi Tidak Ditemukan atau Tidak Ada Perubahan", 
-                    "Gagal Ubah Data", 
-                    JOptionPane.WARNING_MESSAGE);
-            }
+            JOptionPane.showMessageDialog(null, 
+                "Data Absensi Berhasil Diperbarui", 
+                "Sukses", 
+                JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null, 
-                "Pegawai Tidak Ditemukan", 
+                "Data Absensi Tidak Ditemukan atau Tidak Ada Perubahan", 
                 "Gagal Ubah Data", 
                 JOptionPane.WARNING_MESSAGE);
         }
     }
 } catch (SQLException ex) {
     Logger.getLogger(AbsensiFrame.class.getName()).log(Level.SEVERE, null, ex);
+    JOptionPane.showMessageDialog(null, 
+        "Terjadi Kesalahan pada Database. Silakan Periksa Koneksi dan Coba Lagi.", 
+        "Kesalahan", 
+        JOptionPane.ERROR_MESSAGE);
+} catch (Exception ex) {
+    JOptionPane.showMessageDialog(null, 
+        "Terjadi Kesalahan Tidak Terduga. Silakan Periksa Input dan Coba Lagi.", 
+        "Kesalahan", 
+        JOptionPane.ERROR_MESSAGE);
 }
 
 
